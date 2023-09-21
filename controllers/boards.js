@@ -20,7 +20,7 @@ const getSingleBoard = asyncWrapper(async (req, res) => {
   const { userId } = req.user;
   const board = Board.findOne({ createdBy: userId, _id: boardId });
   if (!board) {
-    return res.status(404).json({ message: "no job found" });
+    return res.status(404).json({ message: "no board found" });
   }
   res.status(StatusCodes.OK).json({ board });
 });

@@ -8,10 +8,12 @@ const getAllTasks = asyncWrapper(async (req, res, next) => {
     user: { userId },
     params: { id: boardId },
   } = req;
+
   const tasks = await Board.find({ createdBy: userId, _id: boardId });
   if (!tasks) {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "No task Found" });
   }
+  
   const myTask = tasks.reduce((acc, curr) => {
     acc.push(...curr.tasks);
     return acc;

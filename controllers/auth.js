@@ -6,6 +6,7 @@ const {
   CreateCustomError,
   createCustomError,
 } = require("../errors/custom-error");
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
