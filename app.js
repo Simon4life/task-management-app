@@ -1,5 +1,8 @@
+require('dotenv').config();
+
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
 const boardRouter = require("./routes/boardsRoute");
 const tasksRouter = require("./routes/taskRoute");
 const bodyParser = require("body-parser");
@@ -27,13 +30,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
-require("dotenv").config();
+
 
 app.use([
   express.static("./methods-public"),
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
 ]);
+app.use(cookieParser(process.env.JWT_SECRET));
+
 
 app.use("/api/v1/boards", authentication, boardRouter);
 app.use("/api/v1/tasks", authentication, tasksRouter);
