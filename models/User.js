@@ -29,17 +29,4 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// UserSchema.methods.
-// const createJWT = function () {
-//   return jwt.sign({ userId: this._userId, name: this.name }, "helloword", {
-//     expiresIn: "30d",
-//   });
-// };
-
-// UserSchema.methods.comparePassword = async function (canditatePassword) {
-//   const isMatch = await bcrypt.compare(canditatePassword, this.password);
-//   return isMatch;
-// };
-// console.log(UserSchema.methods);
-
 module.exports = mongoose.model("User", UserSchema);

@@ -5,7 +5,6 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const boardRouter = require("./routes/boardsRoute");
 const tasksRouter = require("./routes/taskRoute");
-const bodyParser = require("body-parser");
 const connectDB = require("./db/connect");
 const errorHandlerMiddleWare = require("./middleware/errorHandler");
 const authRouter = require("./routes/auth");
@@ -30,13 +29,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
-
-
-app.use([
-  express.static("./methods-public"),
-  bodyParser.urlencoded({ extended: false }),
-  bodyParser.json(),
-]);
 app.use(cookieParser(process.env.JWT_SECRET));
 
 

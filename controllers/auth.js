@@ -44,14 +44,14 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
   const { name, email, password } = req.body;
-
+  
   if (!name || !email || !password) {
     res.send("Please provide values");
   } 
   const emailAlreadyExists = await User.findOne({email});
 
   if(emailAlreadyExists) {
-    res.json({"msg": "email already exists"})
+    res.status(StatusCodes.BAD_GATEWAY).json({"msg": "email already exists"})
   }
 
   const user = await User.create({ name, email, password });

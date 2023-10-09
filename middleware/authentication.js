@@ -1,27 +1,24 @@
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
+const {verifyUserToken} = require("../utils/jwt")
 
 const auth = async (req, res, next) => {
-  const authToken = req.headers.authorization;
-
-  if (!authToken || !authToken.startsWith("Bearer ")) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ msg: "Authentication Invalid" });
+  const {accessToken} = req.signedCookies;
+  if(!accessToken) {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid credentials"})
   }
-  const token = authToken.split(" ")[1];
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET, function (err, decoded) {
-      if (err) {
-        console.log(err);
-      }
-      req.user = { userId: decoded.userId, name: decoded.name };
+  const {name, email, userId} = verifyUserToken(process.env.JWT_SECRET);
 
+  if(name, email, userId) {
+    try {
+      req.user = { name, email, userId };
       next();
-    });
-  } catch (error) {
-    throw new UnauthenticatedError("Authentication invalid");
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    res.status(StatusCodes.BAD_REQUEST).json({message: "Error trying to authenticate user"});
   }
 };
 
