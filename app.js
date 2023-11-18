@@ -24,7 +24,7 @@ app.use(
 );
 
 app.use(cors((req,res,next)=> {
-  const allowedOrigins = ['http://localahost:5173', 'https://another-client-app.com'];
+  const allowedOrigins = ['http://localhost:5173', 'https://another-client-app.com'];
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
