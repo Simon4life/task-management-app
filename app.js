@@ -22,10 +22,8 @@ app.use(
     max: 100, // limit each IP to 100 requests per windowMs
   })
 );
-const corsOptions = {
-  origin: "*",
-};
-app.use(cors(corsOptions));
+
+app.use(cors());
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
