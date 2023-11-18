@@ -7,6 +7,9 @@ const {
 } = require("../errors/custom-error");
 const { addCookiesToResponse } = require("../utils/jwt");
 const createTokenUser = require("../utils/createTokenUser");
+const {createJWT} = require("../utils/jwt")
+const Token = require("../models/Token");
+const crypto = require("crypto");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -31,9 +34,22 @@ const login = async (req, res) => {
     }
     if (result) {
       const tokenUser = createTokenUser(user);
-      addCookiesToResponse({res, user: tokenUser});
-      res.status(StatusCodes.OK).json({ user: tokenUser });
-
+      let existingToken = await Token.findOne({userId: tokenUser.userId});
+      
+      if(existingToken) {
+        const {token}= existingToken;
+        const accessToken = createJWT({
+          payload: tokenUser,
+          secret: process.env.ACCESS_TOKEN_SECRET,
+          expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
+        });
+        addCookiesToResponse({res, user: tokenUser, token});
+        res
+          .status(StatusCodes.OK)
+          .json({ user: tokenUser, accessToken: accessToken });
+      } else {
+        res.status(StatusCodes.FORBIDDEN).json({message: "There was an error"})
+      }
     } else {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -51,20 +67,27 @@ const register = async (req, res) => {
   const emailAlreadyExists = await User.findOne({email});
 
   if(emailAlreadyExists) {
-    res.status(StatusCodes.BAD_GATEWAY).json({"msg": "email already exists"})
+    res.status(StatusCodes.BAD_REQUEST).json({"msg": "email already exists"})
   }
 
   const user = await User.create({ name, email, password });
   const tokenUser = createTokenUser(user);
-  addCookiesToResponse({res, user: tokenUser});
-
-  res.status(201).json({ user: tokenUser });
+  
+  const accessToken = createJWT({
+    payload: tokenUser,
+    secret: process.env.ACCESS_TOKEN_SECRET,
+    expiresIn: process.env.ACCESS_TOKEN_LIFETIME,
+  });
+  const token = crypto.randomBytes(40).toString("hex");
+  await Token.create({ token, userId: tokenUser.userId });
+  addCookiesToResponse({ res, user: tokenUser, token });
+  res.status(201).json({ user: tokenUser, accessToken });
 
 };
 
 const logout = async (req, res) => {
 
-  res.cookie('accessToken', 'logout', {
+  res.cookie('refreshToken', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),
   });

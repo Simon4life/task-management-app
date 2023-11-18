@@ -23,13 +23,13 @@ app.use(
   })
 );
 const corsOptions = {
-  origin: "*"
-}
+  origin: "*",
+};
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
-app.use(cookieParser(process.env.JWT_SECRET));
+app.use(cookieParser(process.env.SECRET));
 
 
 app.use("/api/v1/boards", authentication, boardRouter);
@@ -38,7 +38,7 @@ app.use("/auth", authRouter);
 
 app.use(errorHandlerMiddleWare);
 
-const port = process.env.PORT || 6000;
+const port =  process.env.PORT || 6000;
 
 const start = async () => {
   try {
