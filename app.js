@@ -23,7 +23,21 @@ app.use(
   })
 );
 
-app.use(cors());
+app.use(cors((req,res,next)=> {
+  const allowedOrigins = ['http://localahost:5173', 'https://another-client-app.com'];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  // Other CORS headers...
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+  next();
+}));
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
