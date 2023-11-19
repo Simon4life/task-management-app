@@ -23,15 +23,9 @@ app.use(
   })
 );
 
-var whitelist = ["http://localhost:5173"];
 var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "http://localhost:5173",
+  credentials: true
 };
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -46,7 +40,7 @@ app.use("/auth", authRouter);
 
 app.use(errorHandlerMiddleWare);
 
-const port =  process.env.PORT || 6000;
+const port =  process.env.PORT || 8000;
 
 const start = async () => {
 try {
