@@ -23,21 +23,17 @@ app.use(
   })
 );
 
-app.use(cors((req,res,next)=> {
-  const allowedOrigins = ['http://localhost:5173', 'https://another-client-app.com'];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  // Other CORS headers...
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-  next();
-}));
+var whitelist = ["http://localhost:5173"];
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(xss());
@@ -53,7 +49,7 @@ app.use(errorHandlerMiddleWare);
 const port =  process.env.PORT || 6000;
 
 const start = async () => {
-  try {
+try {
     await connectDB(process.env.MONGO_URI);
     app.listen(port, console.log(`server is listening at port ${port}...`));
   } catch (error) {
