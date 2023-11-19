@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { StatusCodes } = require("http-status-codes");
 const {verifyUserToken} = require("../utils/jwt")
+const User = require("../models/User");
 
 const auth = async (req, res, next) => {
   const accessToken = req.headers.authorization.split(" ")[1];
